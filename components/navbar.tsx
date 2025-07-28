@@ -49,7 +49,7 @@ export const Navbar = () => {
             href="/dashboard"
           >
             <Logo />
-            <p className="font-bold text-inherit">ACME</p>
+            <p className="font-bold text-inherit text-2xl">Streamr</p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">

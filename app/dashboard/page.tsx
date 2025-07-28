@@ -3,24 +3,24 @@ import { tmdbApi } from "@/lib/tmdb";
 import Image from "next/image";
 
 export default async function Dashboard() {
-  const [trending, popular, topRated] = await Promise.all([
-    tmdbApi.getTrending(),
-    tmdbApi.getPopular(),
-    tmdbApi.getTopRated(),
-  ]);
-  console.log(trending);
+  // const [trending] = await Promise.all([
+  //   tmdbApi.getTrending(),
+  //   // tmdbApi.getPopular(),
+  //   // tmdbApi.getTopRated(),
+  // ]);
+  // console.log(trending);
 
   return (
     <div className="space-y-8">
       <section>
         <h2 className="text-2xl font-bold mb-4">Trending This Week</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {trending.results.slice(0, 6).map((movie: any) => (
+          {/* {trending.results.slice(0, 6).map((movie: any) => (
             <MovieCard key={movie.id} movie={movie} />
-          ))}
+          ))} */}
         </div>
       </section>
-
+      {/* 
       <section>
         <h2 className="text-2xl font-bold mb-4">Popular Movies</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -28,16 +28,16 @@ export default async function Dashboard() {
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
-      </section>
+      </section> */}
 
-      <section>
+      {/* <section>
         <h2 className="text-2xl font-bold mb-4">Top Rated</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {topRated.results.slice(0, 6).map((movie: any) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }
