@@ -1,38 +1,90 @@
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { login, signup } from "./actions";
-import img from "../../assets/img.jpg";
+"use client";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ code?: string }>;
-}) {
-  const supabase = await createClient();
-  const params = await searchParams;
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
+import toast from "react-hot-toast";
 
-  if (params.code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(params.code);
-    if (!error) {
-      redirect("/dashboard");
+export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (code) {
+      handleEmailVerification(code);
     }
-  }
+  }, [searchParams]);
 
+  const handleEmailVerification = async (code: string) => {
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      toast.success("Email verified successfully! Welcome!");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } else {
+      toast.error("Email verification failed");
+    }
+  };
+
+  const handleLogin = async (formData: FormData) => {
+    setIsLoading(true);
+    const data = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
+
+    const { error } = await supabase.auth.signInWithPassword(data);
+
+    if (error) {
+      toast.error("Login failed: " + error.message);
+      setIsLoading(false);
+      return;
+    }
+
+    toast.success("Login successful! Welcome back!");
+
+    setTimeout(() => {
+      router.push("/dashboard");
+    }, 1000);
+  };
+  const handleSignup = async (formData: FormData) => {
+    setIsSignup(true);
+
+    const data = {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    };
+
+    const { error } = await supabase.auth.signUp(data);
+
+    if (error) {
+      toast.error("Signup failed: " + error.message);
+      setIsSignup(false);
+      return;
+    }
+
+    toast.success(
+      "Account created! Please check your email to verify your account."
+    );
+    setIsSignup(false);
+  };
   return (
     <div className="min-h-screen flex">
       {/* Left side - Movie background (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 relative">
-        {/* <div
+        <div
           className="w-full bg-cover bg-center"
           style={{
-            backgroundImage: `${img}`,
+            backgroundImage: `url('https://images.unsplash.com/photo-1489599843714-2e99ac2108c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')`,
           }}
-        > */}
-        <div className="h-fit w-fit">
-          <img src={img.src} className=" bg-center h-full w-full" />
+        >
+          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         </div>
-        {/* <div className="absolute inset-0 bg-black bg-opacity-50"></div> */}
-        {/* </div> */}
       </div>
 
       {/* Right side - Login form */}
@@ -124,10 +176,11 @@ export default async function LoginPage({
 
               {/* Sign In Button */}
               <button
-                formAction={login}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                formAction={handleLogin}
+                disabled={isLoading}
+                className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-400 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800"
               >
-                Sign In
+                {isLoading ? "Signing in..." : "Sign In"}
               </button>
 
               {/* Divider */}
@@ -171,10 +224,11 @@ export default async function LoginPage({
               <div className="mt-6 text-center">
                 <span className="text-gray-400">Don't have an account? </span>
                 <button
-                  formAction={signup}
-                  className="text-orange-400 hover:text-orange-300 font-semibold"
+                  formAction={handleSignup}
+                  disabled={isSignup}
+                  className="w-full bg-transparent border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white disabled:opacity-50 font-semibold py-3 px-4 rounded-lg transition duration-200"
                 >
-                  Sign up
+                  {isSignup ? "Creating account..." : "Create new account"}
                 </button>
               </div>
             </form>
