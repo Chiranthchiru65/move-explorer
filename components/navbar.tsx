@@ -7,16 +7,22 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
+import { Avatar } from "@heroui/avatar";
+import { Button } from "@heroui/button";
+import { Divider } from "@heroui/divider";
 import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
+import { User, LogOut } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
+import { ProfileDropdown } from "./profileDropdown";
 
 export const Navbar = () => {
   const searchInput = (
@@ -44,12 +50,9 @@ export const Navbar = () => {
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
-          <NextLink
-            className="flex justify-start items-center gap-1"
-            href="/dashboard"
-          >
+          <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
-            <p className="font-bold text-inherit text-2xl">Streamr</p>
+            <p className="font-bold text-inherit">Movie Explorer</p>
           </NextLink>
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
@@ -78,10 +81,14 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
+        <NavbarItem>
+          <ProfileDropdown />
+        </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
+        <ProfileDropdown />
         <NavbarMenuToggle />
       </NavbarContent>
 
@@ -98,7 +105,7 @@ export const Navbar = () => {
                       ? "danger"
                       : "foreground"
                 }
-                href="#"
+                href={item.href}
                 size="lg"
               >
                 {item.label}
