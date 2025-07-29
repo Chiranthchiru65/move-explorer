@@ -4,9 +4,9 @@ import Image from "next/image";
 import MovieCarousel from "@/components/movieCarousel";
 
 export default async function Dashboard() {
-  const [trending] = await Promise.all([
+  const [trending, popular] = await Promise.all([
     tmdbApi.getTrending(),
-    // tmdbApi.getPopular(),
+    tmdbApi.getPopular(),
     // tmdbApi.getTopRated(),
   ]);
   // console.log(trending);
@@ -16,7 +16,7 @@ export default async function Dashboard() {
       <section className="mb-12">
         <MovieCarousel movies={trending.results} title="Trending This Week" />
       </section>
-      <section className="px-14">
+      <section className="px-14 mb-12">
         <h2 className="text-2xl font-bold mb-4">Trending This Week</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {trending.results.slice(0, 6).map((movie: any) => (
@@ -24,15 +24,15 @@ export default async function Dashboard() {
           ))}
         </div>
       </section>
-      {/* 
-      <section>
+
+      <section className="px-14">
         <h2 className="text-2xl font-bold mb-4">Popular Movies</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {popular.results.slice(0, 6).map((movie: any) => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
-      </section> */}
+      </section>
 
       {/* <section>
         <h2 className="text-2xl font-bold mb-4">Top Rated</h2>
