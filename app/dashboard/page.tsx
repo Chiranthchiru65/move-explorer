@@ -1,23 +1,27 @@
 import React from "react";
 import { tmdbApi } from "@/lib/tmdb";
 import Image from "next/image";
+import MovieCarousel from "@/components/movieCarousel";
 
 export default async function Dashboard() {
-  // const [trending] = await Promise.all([
-  //   tmdbApi.getTrending(),
-  //   // tmdbApi.getPopular(),
-  //   // tmdbApi.getTopRated(),
-  // ]);
+  const [trending] = await Promise.all([
+    tmdbApi.getTrending(),
+    // tmdbApi.getPopular(),
+    // tmdbApi.getTopRated(),
+  ]);
   // console.log(trending);
 
   return (
-    <div className="space-y-8">
-      <section>
+    <div className="">
+      <section className="mb-12">
+        <MovieCarousel movies={trending.results} title="Trending This Week" />
+      </section>
+      <section className="px-14">
         <h2 className="text-2xl font-bold mb-4">Trending This Week</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {/* {trending.results.slice(0, 6).map((movie: any) => (
+          {trending.results.slice(0, 6).map((movie: any) => (
             <MovieCard key={movie.id} movie={movie} />
-          ))} */}
+          ))}
         </div>
       </section>
       {/* 
@@ -48,7 +52,7 @@ function MovieCard({ movie }: { movie: any }) {
     : "/placeholder-movie.jpg";
 
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform">
+    <div className="bg-gray-100 shadow-md dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform">
       <Image
         width={300}
         height={450}
