@@ -63,7 +63,7 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
 
   return (
     <section ref={ref} className="min-h-[400px] mb-12 px-12">
-      <h2 className="text-2xl font-bold mb-6 text-white">{title}</h2>
+      <h2 className="text-2xl font-bold mb-6 ">{title}</h2>
 
       {loading && (
         <div className="flex items-center justify-center h-64">
