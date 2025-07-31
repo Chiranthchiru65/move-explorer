@@ -1,7 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
+
 export default function MovieCard({ movie }: { movie: any }) {
   return (
-    <div className="bg-gray-100 shadow-md dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform">
+    <Link
+      href={`/movie-details/${movie.id}`}
+      className="bg-gray-100 shadow-md dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform"
+    >
       <Image
         width={300}
         height={450}
@@ -19,6 +24,6 @@ export default function MovieCard({ movie }: { movie: any }) {
           <span className="text-xs ml-1">{movie.vote_average.toFixed(1)}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -23,4 +23,11 @@ export const tmdbApi = {
   getTopRated: () => tmdbFetch("/movie/top_rated"),
   searchMovies: (query: string) =>
     tmdbFetch(`/search/movie?query=${encodeURIComponent(query)}`),
+  getMovieDetails: (movieId: number | string) => tmdbFetch(`/movie/${movieId}`),
+  getMovieDetailsWithExtras: (movieId: number | string) =>
+    tmdbFetch(
+      `/movie/${movieId}?append_to_response=credits,videos,images,reviews`
+    ),
 };
+
+export default function getPopularNew() {}
