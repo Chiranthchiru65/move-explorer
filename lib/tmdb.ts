@@ -1,10 +1,12 @@
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
-const TMDB_ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN;
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
 const tmdbFetch = async (endpoint: string) => {
-  const response = await fetch(`${TMDB_BASE_URL}${endpoint}`, {
+  const separator = endpoint.includes("?") ? "&" : "?";
+  const urlWithApiKey = `${TMDB_BASE_URL}${endpoint}${separator}api_key=${TMDB_API_KEY}`;
+
+  const response = await fetch(urlWithApiKey, {
     headers: {
-      Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
       "Content-Type": "application/json",
     },
     next: { revalidate: 3600 },
@@ -30,4 +32,6 @@ export const tmdbApi = {
     ),
 };
 
-export default function getPopularNew() {}
+export default function getPopularNew() {
+  return tmdbApi.getPopular();
+}

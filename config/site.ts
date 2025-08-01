@@ -12,18 +12,6 @@ export const siteConfig = {
       label: "Docs",
       href: "/dashboard/docs",
     },
-    {
-      label: "Pricing",
-      href: "/dashboard/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/dashboard/blog",
-    },
-    {
-      label: "About",
-      href: "/dashboard/about",
-    },
   ],
   navMenuItems: [
     {
@@ -33,18 +21,6 @@ export const siteConfig = {
     {
       label: "Docs",
       href: "/dashboard/docs",
-    },
-    {
-      label: "Pricing",
-      href: "/dashboard/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/dashboard/blog",
-    },
-    {
-      label: "About",
-      href: "/dashboard/about",
     },
   ],
 };

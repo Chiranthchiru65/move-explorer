@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function MovieCard({ movie }: { movie: any }) {
   return (
     <Link
-      href={`/movie-details/${movie.id}`}
+      href={`/dashboard/movie-details/${movie.id}`}
       className="bg-gray-100 shadow-md dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-transform"
     >
       <Image
