@@ -1,17 +1,7 @@
 "use client";
 import * as React from "react";
 import Image from "next/image";
-
-export interface Movie {
-  id: number;
-  title: string;
-  overview: string;
-  poster_path: string;
-  backdrop_path: string;
-  release_date: string;
-  vote_average: number;
-  genre_ids: number[];
-}
+import type { Movie } from "@/lib/tmdb";
 
 interface MovieCarouselProps {
   movies: Movie[];
@@ -125,7 +115,7 @@ function MovieCarousel({
   };
 
   // Take only first 5 movies for carousel
-  const featuredMovies = movies.slice(0, 5);
+  const featuredMovies = movies.slice(0, 10);
 
   return (
     <div className="w-full">

@@ -1,16 +1,16 @@
-import { tmdbApi } from "@/lib/tmdb";
+// import { getPopular } from "@/lib/tmdb";
 
-export async function GET() {
-  try {
-    const data = await tmdbApi.getPopular();
-    return Response.json(data);
-  } catch (error) {
-    return Response.json(
-      { error: "Failed to fetch popular movies" },
-      { status: 500 }
-    );
-  }
-}
+// export async function GET() {
+//   try {
+//     const data = await getPopular();
+//     return Response.json(data);
+//   } catch (error) {
+//     return Response.json(
+//       { error: "Failed to fetch popular movies" },
+//       { status: 500 }
+//     );
+//   }
+// }
 
 // export async function GET() {
 //   try {
