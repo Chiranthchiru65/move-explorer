@@ -71,7 +71,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
     return (
       <div className="min-h-screen  bg-white dark:bg-black text-gray-900 dark:text-white">
         {/* Hero Section with Backdrop */}
-        <div className="relative h-[60vh] overflow-hidden">
+        <div className="relative h-[80vh] overflow-hidden">
           {/* Backdrop Image */}
           <div className="absolute inset-0">
             <Image
@@ -82,14 +82,11 @@ export default async function MoviePage({ params }: MoviePageProps) {
               priority
             />
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/60 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-transparent to-white/40 dark:from-gray-900/80 dark:via-transparent dark:to-gray-900/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:to-transparent " />
           </div>
 
-          {/* Content Container */}
           <div className="relative h-full flex items-end">
             <div className="container mx-auto px-6 pb-12 flex gap-8 items-end">
-              {/* Movie Poster */}
               <div className="flex-shrink-0">
                 <div className="w-64 h-96 rounded-lg overflow-hidden shadow-2xl">
                   <Image
@@ -102,14 +99,12 @@ export default async function MoviePage({ params }: MoviePageProps) {
                 </div>
               </div>
 
-              {/* Movie Info */}
               <div className="flex-1 pb-4">
                 <h1 className="text-5xl font-bold mb-2 text-gray-900 dark:text-white">
                   {movie.title}
                 </h1>
 
-                {/* Movie Meta */}
-                <div className="flex items-center gap-4 text-lg text-gray-600 dark:text-gray-300 mb-4">
+                <div className="flex items-center gap-4 text-lg text-gray-900 dark:text-gray-300 mb-4">
                   <span>{formatYear(movie.release_date)}</span>
                   <span>•</span>
                   <span>PG-13</span>
@@ -117,19 +112,16 @@ export default async function MoviePage({ params }: MoviePageProps) {
                   <span>{formatRuntime(movie.runtime)}</span>
                 </div>
 
-                {/* Tagline */}
                 {movie.tagline && (
-                  <p className="text-xl text-gray-600 dark:text-gray-300 italic mb-4">
+                  <p className="text-xl text-gray-600 dark:text-gray-800 italic mb-4">
                     "{movie.tagline}"
                   </p>
                 )}
 
-                {/* Overview */}
-                <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed max-w-2xl mb-6">
+                <p className="text-lg text-black dark:text-gray-100 leading-relaxed max-w-2xl mb-6">
                   {movie.overview}
                 </p>
 
-                {/* Action Buttons */}
                 <div className="flex gap-4">
                   <button className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors text-lg">
                     Play
@@ -143,12 +135,9 @@ export default async function MoviePage({ params }: MoviePageProps) {
           </div>
         </div>
 
-        {/* Details Section */}
         <div className="container mx-auto px-6 py-12">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Genres */}
               <div>
                 <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
                   Genres
@@ -165,7 +154,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
                 </div>
               </div>
 
-              {/* Production Companies */}
               <div>
                 <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
                   Production
@@ -183,9 +171,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
-              {/* Rating */}
               <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
                   Rating
@@ -201,7 +187,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
                 </div>
               </div>
 
-              {/* Movie Facts */}
               <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                   Movie Facts
@@ -250,7 +235,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
                 </div>
               </div>
 
-              {/* External Links */}
               <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
                   Links
@@ -282,13 +266,11 @@ export default async function MoviePage({ params }: MoviePageProps) {
           </div>
         </div>
 
-        {/* More Like This Section - Placeholder */}
         <div className="container mx-auto px-6 pb-12">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
             More Like This
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Placeholder for similar movies */}
             {Array(4)
               .fill(0)
               .map((_, i) => (

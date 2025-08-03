@@ -2,6 +2,7 @@
 import * as React from "react";
 import Image from "next/image";
 import type { Movie } from "@/lib/tmdb";
+import Link from "next/link";
 
 interface MovieCarouselProps {
   movies: Movie[];
@@ -204,10 +205,12 @@ function MovieCarousel({
 
                     {/* Action Buttons */}
                     <div className="flex gap-3 mt-4">
-                      <button className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
-                        View Details
-                      </button>
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                      <Link href={`/dashboard/movie-details/${movie.id}`}>
+                        <button className="bg-orange-500 cursor-pointer hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                          View Details
+                        </button>
+                      </Link>
+                      <button className="bg-gray-700 cursor-not-allowed hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
                         Add to List
                       </button>
                     </div>

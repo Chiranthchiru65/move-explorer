@@ -12,7 +12,7 @@ export default async function HomePage() {
     return (
       <div className="space-y-12 pb-12">
         {/* Hero carousel loads immediately */}
-        <section className="mb-12">
+        <section className="mb-12 mt-6">
           <MovieCarousel movies={trending.results} title="Trending This Week" />
         </section>
 
