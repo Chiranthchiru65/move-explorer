@@ -9,8 +9,8 @@ export const siteConfig = {
       href: "/dashboard",
     },
     {
-      label: "Docs",
-      href: "/dashboard/docs",
+      label: "Movies",
+      href: "/dashboard/movies",
     },
   ],
   navMenuItems: [
@@ -19,8 +19,8 @@ export const siteConfig = {
       href: "/dashboard",
     },
     {
-      label: "Docs",
-      href: "/dashboard/docs",
+      label: "movies",
+      href: "/dashboard/movies",
     },
   ],
 };

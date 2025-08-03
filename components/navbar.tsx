@@ -1,3 +1,4 @@
+"use client";
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -7,36 +8,64 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
-import { Avatar } from "@heroui/avatar";
-import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
-import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
 import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
-import { User, LogOut } from "lucide-react";
-
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { SearchIcon, Logo } from "@/components/icons";
 import { ProfileDropdown } from "./profileDropdown";
 
 export const Navbar = () => {
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState("");
+
+  function debounce<T extends (...args: any[]) => void>(
+    func: T,
+    delay: number
+  ): (...args: Parameters<T>) => void {
+    let timeoutId: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  }
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      if (value.trim()) {
+        router.push(
+          `/dashboard/movies?search=${encodeURIComponent(value.trim())}`
+        );
+      }
+    }, 500), // Wait 500ms after user stops typing
+    [router]
+  );
+
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value);
+
+    if (value.trim()) {
+      debouncedSearch(value);
+    } else {
+      // Clear search immediately when input is empty
+      router.push("/dashboard/movies");
+    }
+  };
+
   const searchInput = (
     <Input
       aria-label="Search"
+      value={searchValue}
+      onChange={(e) => handleSearchChange(e.target.value)}
       classNames={{
         inputWrapper: "bg-default-100",
         input: "text-sm",
       }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
       labelPlacement="outside"
       placeholder="Search..."
       startContent={
@@ -82,12 +111,14 @@ export const Navbar = () => {
         </NavbarItem>
         <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
         <NavbarItem>
+          {/* profile dropdown */}
           <ProfileDropdown />
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <ThemeSwitch />
+        {/* profile dropdown */}
         <ProfileDropdown />
         <NavbarMenuToggle />
       </NavbarContent>

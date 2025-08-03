@@ -1,7 +1,5 @@
-// lib/tmdb.ts
 import axios from "axios";
 
-// Cache configuration based on TMDB recommendations
 const MINUTE = 60;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
@@ -13,7 +11,6 @@ const CACHE_DURATIONS = {
   upcoming: 6 * HOUR,
 };
 
-// Types for TMDB API responses
 export interface Movie {
   id: number;
   title: string;
@@ -194,7 +191,6 @@ export const getUpcoming = async (page: number = 1): Promise<TMDBResponse> => {
   }
 };
 
-// Optional: Get movie details (for when user clicks on a movie)
 export const getMovieDetails = async (movieId: number) => {
   try {
     const response = await tmdbApi.get(`/movie/${movieId}`);
@@ -205,7 +201,6 @@ export const getMovieDetails = async (movieId: number) => {
   }
 };
 
-// Optional: Search movies (for your future Tanstack Query implementation)
 export const searchMovies = async (
   query: string,
   page: number = 1
@@ -215,7 +210,7 @@ export const searchMovies = async (
       params: {
         query,
         page,
-        include_adult: false, // Usually you want to exclude adult content
+        include_adult: false,
       },
     });
     return response.data;
