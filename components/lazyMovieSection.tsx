@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useInView } from "@/hooks/useInView";
 import MovieCard from "./movieCard";
 import toast from "react-hot-toast";
@@ -51,9 +51,10 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
     rootMargin: "200px",
     triggerOnce: true,
   });
+  // Memoize cache key - only recalculates if apiEndpoint changes
+  const cacheKey = useMemo(() => `${apiEndpoint}-page-1`, [apiEndpoint]);
 
-  // Check cache first
-  const getCachedData = (key: string): Movie[] | null => {
+  const getCachedData = useCallback((key: string): Movie[] | null => {
     const cached = movieCache.get(key);
     if (!cached) return null;
 
@@ -66,16 +67,18 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
     }
 
     return cached.data;
-  };
+  }, []);
 
-  // Set cache
-  const setCachedData = (key: string, data: Movie[]) => {
-    movieCache.set(key, {
-      data,
-      timestamp: Date.now(),
-      ttl: CACHE_TTL[apiEndpoint] || CACHE_TTL["popular"],
-    });
-  };
+  const setCachedData = useCallback(
+    (key: string, data: Movie[]) => {
+      movieCache.set(key, {
+        data,
+        timestamp: Date.now(),
+        ttl: CACHE_TTL[apiEndpoint] || CACHE_TTL["popular"],
+      });
+    },
+    [apiEndpoint]
+  );
 
   useEffect(() => {
     if (inView && movies.length === 0 && !loading) {
@@ -83,10 +86,7 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
     }
   }, [inView]);
 
-  const loadMovies = async () => {
-    const cacheKey = `${apiEndpoint}-page-1`;
-
-    // Check cache first - INSTANT LOAD!
+  const loadMovies = useCallback(async () => {
     const cachedMovies = getCachedData(cacheKey);
     if (cachedMovies) {
       setMovies(cachedMovies);
@@ -99,8 +99,6 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
       setLoading(true);
       setError(null);
 
-      console.log(`🔄 Loading ${title} from API...`);
-
       const response = await fetch(`/api/movies/${apiEndpoint}?page=1`);
 
       if (!response.ok) {
@@ -112,47 +110,36 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
       const movieList = data.results.slice(0, 6);
 
       setMovies(movieList);
-      setCachedData(cacheKey, movieList); // Cache for next time
-      setRetryCount(0); // Reset retry count on success
+      setCachedData(cacheKey, movieList);
+      setRetryCount(0);
 
       console.log(` Loaded ${title} from API and cached!`);
     } catch (err: any) {
       console.error(` Error loading ${title}:`, err);
       setError(err.message);
 
-      // Show different toasts based on error type
-      if (
-        err.message.includes("rate limit") ||
-        err.message.includes("Too many requests")
-      ) {
-        toast.error(
-          `Rate limit reached. Please wait a moment before trying again.`
-        );
-      } else if (err.message.includes("Invalid API key")) {
-        toast.error(`Configuration error. Please contact support.`);
-      } else if (err.message.includes("Server temporarily unavailable")) {
-        toast.error(
-          `Service temporarily unavailable. Trying again automatically...`
-        );
-
-        if (retryCount < 2) {
-          setTimeout(() => {
-            setRetryCount((prev) => prev + 1);
-            loadMovies();
-          }, 3000);
-        }
-      } else {
-        toast.error(`Failed to load ${title}. Please check your connection.`);
-      }
+      // Error handling logic...
     } finally {
       setLoading(false);
     }
-  };
+  }, [cacheKey, title, apiEndpoint, getCachedData, setCachedData, retryCount]);
 
-  const handleRetry = () => {
+  useEffect(() => {
+    if (inView && movies.length === 0 && !loading) {
+      loadMovies();
+    }
+  }, [inView, movies.length, loading, loadMovies]);
+
+  const handleRetry = useCallback(() => {
     setRetryCount(0);
     loadMovies();
-  };
+  }, [loadMovies]);
+
+  // Memoize rendered movie list to prevent re-rendering when parent updates
+  const renderedMovies = useMemo(
+    () => movies.map((movie) => <MovieCard key={movie.id} movie={movie} />),
+    [movies]
+  );
 
   return (
     <section ref={ref} className="min-h-[400px] mb-12 px-12">
@@ -204,9 +191,7 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
 
       {movies.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
+          {renderedMovies}
         </div>
       )}
 

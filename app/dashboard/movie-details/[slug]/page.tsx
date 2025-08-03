@@ -2,6 +2,7 @@
 import { getMovieDetails } from "@/lib/tmdb";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 interface MoviePageProps {
   params: { slug: string };
@@ -41,8 +42,8 @@ interface MovieDetails {
 }
 
 export default async function MoviePage({ params }: MoviePageProps) {
-  const { slug } = await params; // ✅ Await params for Next.js 15
-  const movieId = slug;
+  const { slug } = await params;
+  const movieId = Number(slug);
 
   try {
     const movie: MovieDetails = await getMovieDetails(movieId);
@@ -305,6 +306,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
       </div>
     );
   } catch (error) {
+    toast.error("error loading movie");
     console.error("Error loading movie:", error);
     notFound();
   }
