@@ -1,5 +1,19 @@
+// lib/tmdb.ts
 import axios from "axios";
 
+// Cache configuration based on TMDB recommendations
+const MINUTE = 60;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+const CACHE_DURATIONS = {
+  trending: 30 * MINUTE,
+  popular: 2 * HOUR,
+  topRated: 1 * DAY,
+  upcoming: 6 * HOUR,
+};
+
+// Types for TMDB API responses
 export interface Movie {
   id: number;
   title: string;
@@ -24,9 +38,11 @@ export interface TMDBResponse {
   total_results: number;
 }
 
+// base configuration
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
+// create axios instance with base config
 const tmdbApi = axios.create({
   baseURL: TMDB_BASE_URL,
   params: {
@@ -35,80 +51,146 @@ const tmdbApi = axios.create({
   timeout: 10000, // 10 second timeout
 });
 
-const handleApiError = (error: any, functionName: string) => {
+// enhanced error types for better UX
+export class TMDBError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public type: "auth" | "rate_limit" | "not_found" | "server" | "network"
+  ) {
+    super(message);
+    this.name = "TMDBError";
+  }
+}
+
+// enhanced error handler with specific error types
+const handleApiError = (error: any, functionName: string): never => {
   if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+    const message = error.response?.data?.status_message || error.message;
+
     console.error(`${functionName} failed:`, {
-      status: error.response?.status,
-      message: error.response?.data?.status_message || error.message,
+      status,
+      message,
       url: error.config?.url,
     });
 
-    if (error.response?.status === 401) {
-      throw new Error(
-        "Invalid API key. Please check your TMDB API configuration."
-      );
-    }
-    if (error.response?.status === 404) {
-      throw new Error("Requested resource not found.");
-    }
-    if (error.response?.status === 429) {
-      throw new Error("Rate limit exceeded. Please try again later.");
+    switch (status) {
+      case 401:
+        throw new TMDBError("Invalid API key", 401, "auth");
+      case 404:
+        throw new TMDBError("Resource not found", 404, "not_found");
+      case 429:
+        throw new TMDBError(
+          "Too many requests. Please try again later.",
+          429,
+          "rate_limit"
+        );
+      case 500:
+      case 502:
+      case 503:
+        throw new TMDBError("Server temporarily unavailable", status, "server");
+      default:
+        throw new TMDBError(
+          `Failed to fetch ${functionName}: ${message}`,
+          status || 500,
+          "network"
+        );
     }
   }
 
   console.error(`${functionName} unexpected error:`, error);
-  throw new Error(
-    `Failed to fetch ${functionName.replace("get", "").toLowerCase()} movies. Please try again.`
-  );
+  throw new TMDBError(`Network error: ${error.message}`, 500, "network");
 };
 
-// API functions
-
+// server-side cached functions with next.js fetch
 export const getTrending = async (
   timeWindow: "day" | "week" = "day"
 ): Promise<TMDBResponse> => {
   try {
-    const response = await tmdbApi.get(`/trending/movie/${timeWindow}`);
-    return response.data;
+    const response = await fetch(
+      `${TMDB_BASE_URL}/trending/movie/${timeWindow}?api_key=${API_KEY}`,
+      {
+        next: { revalidate: CACHE_DURATIONS.trending },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `HTTP ${response.status}: ${errorData.status_message || response.statusText}`
+      );
+    }
+
+    return await response.json();
   } catch (error) {
     handleApiError(error, "getTrending");
-    throw error;
   }
 };
 
 export const getPopular = async (page: number = 1): Promise<TMDBResponse> => {
   try {
-    const response = await tmdbApi.get("/movie/popular", {
-      params: { page },
-    });
-    return response.data;
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`,
+      {
+        next: { revalidate: CACHE_DURATIONS.popular },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `HTTP ${response.status}: ${errorData.status_message || response.statusText}`
+      );
+    }
+
+    return await response.json();
   } catch (error) {
     handleApiError(error, "getPopular");
-    throw error;
   }
 };
 
 export const getTopRated = async (page: number = 1): Promise<TMDBResponse> => {
   try {
-    const response = await tmdbApi.get("/movie/top_rated", {
-      params: { page },
-    });
-    return response.data;
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/top_rated?api_key=${API_KEY}&page=${page}`,
+      {
+        next: { revalidate: CACHE_DURATIONS.topRated },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `HTTP ${response.status}: ${errorData.status_message || response.statusText}`
+      );
+    }
+
+    return await response.json();
   } catch (error) {
     handleApiError(error, "getTopRated");
-    throw error;
   }
 };
 
 export const getUpcoming = async (page: number = 1): Promise<TMDBResponse> => {
   try {
-    const response = await tmdbApi.get("/movie/upcoming", {
-      params: { page },
-    });
-    return response.data;
+    const response = await fetch(
+      `${TMDB_BASE_URL}/movie/upcoming?api_key=${API_KEY}&page=${page}`,
+      {
+        next: { revalidate: CACHE_DURATIONS.upcoming },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `HTTP ${response.status}: ${errorData.status_message || response.statusText}`
+      );
+    }
+
+    return await response.json();
   } catch (error) {
     handleApiError(error, "getUpcoming");
-    throw error;
   }
 };
 
@@ -133,7 +215,7 @@ export const searchMovies = async (
       params: {
         query,
         page,
-        include_adult: false, // usually you want to exclude adult content
+        include_adult: false, // Usually you want to exclude adult content
       },
     });
     return response.data;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTopRated, TMDBError } from "@/lib/tmdb";
+import { getUpcoming, TMDBError } from "@/lib/tmdb";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,23 +17,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`🔄 API: Fetching top rated movies (page ${page})`);
+    console.log(` API: Fetching upcoming movies (page ${page})`);
 
-    const data = await getTopRated(page);
+    const data = await getUpcoming(page);
 
     console.log(
-      `API: Top rated movies fetched successfully (${data.results.length} movies)`
+      ` API: Upcoming movies fetched successfully (${data.results.length} movies)`
     );
 
     return NextResponse.json(data, {
       status: 200,
       headers: {
-        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=43200", // 24 hours cache
+        "Cache-Control": "public, s-maxage=21600, stale-while-revalidate=10800", // 6 hours cache
         "Content-Type": "application/json",
       },
     });
   } catch (error) {
-    console.error(" API: Top rated movies error:", error);
+    console.error(" API: Upcoming movies error:", error);
 
     if (error instanceof TMDBError) {
       const statusMap = {
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: "Failed to fetch top rated movies. Please try again later.",
+        error: "Failed to fetch upcoming movies. Please try again later.",
         type: "server",
         code: "INTERNAL_ERROR",
       },
