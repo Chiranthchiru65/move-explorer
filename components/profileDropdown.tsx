@@ -46,7 +46,7 @@ export const ProfileDropdown = () => {
       <PopoverTrigger>
         <Avatar
           as="button"
-          className="transition-transform hover:scale-105"
+          className="transition-transform hover:scale-105 cursor-pointer"
           color="primary"
           name="User"
           size="sm"

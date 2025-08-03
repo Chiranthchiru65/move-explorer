@@ -47,7 +47,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
   try {
     const movie: MovieDetails = await getMovieDetails(movieId);
-
+    console.log(movie);
     // Helper functions
     const formatRuntime = (minutes: number) => {
       const hours = Math.floor(minutes / 60);
