@@ -42,7 +42,7 @@ export const Navbar = () => {
           `/dashboard/movies?search=${encodeURIComponent(value.trim())}`
         );
       }
-    }, 500), // Wait 500ms after user stops typing
+    }, 500), // wait 500 ms after user stops typing
     [router]
   );
 
@@ -52,7 +52,6 @@ export const Navbar = () => {
     if (value.trim()) {
       debouncedSearch(value);
     } else {
-      // Clear search immediately when input is empty
       router.push("/dashboard/movies");
     }
   };

@@ -1,55 +1,58 @@
-// app/dashboard/movies/page.tsx
-import MovieCard from "@/components/movieCard";
 import { title } from "@/components/primitives";
 import { searchMovies } from "@/lib/tmdb";
-
+import SearchResults from "@/components/searchResults";
 export default async function MoviePage({
   searchParams,
 }: {
   searchParams: { search?: string };
 }) {
   const searchQuery = searchParams.search?.trim() || "";
-
-  let movies: any[] = [];
+  let initialResults: any[] = [];
+  let ssrError = false;
   if (searchQuery) {
     try {
       const response = await searchMovies(searchQuery);
-      movies = response.results;
-      console.log(response.results);
+      initialResults = response.results;
     } catch (error) {
-      console.error("Search failed:", error);
-      // Could show error state here
+      console.error(" SSR: Search failed:", error);
+      ssrError = true;
     }
   }
-
   return (
-    <div>
-      <h1 className={title()}>
-        {searchQuery ? "Search Results" : "All Movies"}
-        {searchQuery && (
-          <div>
-            <span>searched for: "{searchQuery}"</span>
-          </div>
-        )}
+    <div className="px-12 ">
+      <h1 className="text-2xl">
+        {searchQuery ? "Search Results" : "Browse Movies"}
       </h1>
-
       {searchQuery ? (
-        movies.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {movies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No movies found for "{searchQuery}"</p>
-          </div>
-        )
+        <div className="mt-2 ">
+          {ssrError ? (
+            <SearchResults query={searchQuery} />
+          ) : (
+            <SearchResults
+              query={searchQuery}
+              initialResults={initialResults}
+            />
+          )}
+        </div>
       ) : (
-        <div className="text-center py-12">
-          <p className="text-gray-500">
-            Use the search bar above to find movies
-          </p>
+        <div className="text-center ">
+          <div className="text-gray-500">
+            <svg
+              className="mx-auto h-16 w-16 text-gray-400 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <p className="text-lg mb-2">Discover Movies</p>
+            <p>Use the search bar above to find your favorite movies</p>
+          </div>
         </div>
       )}
     </div>

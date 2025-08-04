@@ -91,7 +91,7 @@ function LazyMovieSection({ title, apiEndpoint }: LazyMovieSectionProps) {
     if (cachedMovies) {
       setMovies(cachedMovies);
       setError(null);
-      console.log(`✅ Loaded ${title} from cache (instant!)`);
+      console.log(` Loaded ${title} from cache (instant!)`);
       return;
     }
 

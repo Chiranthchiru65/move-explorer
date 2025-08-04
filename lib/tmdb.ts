@@ -100,10 +100,9 @@ const handleApiError = (error: any, functionName: string): never => {
   throw new TMDBError(`Network error: ${error.message}`, 500, "network");
 };
 
-// server-side cached functions with next.js fetch
 export const getTrending = async (
   timeWindow: "day" | "week" = "day"
-): Promise<TMDBResponse> => {
+): Promise<TMDBResponse | undefined> => {
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/trending/movie/${timeWindow}?api_key=${API_KEY}`,
@@ -122,10 +121,13 @@ export const getTrending = async (
     return await response.json();
   } catch (error) {
     handleApiError(error, "getTrending");
+    return undefined;
   }
 };
 
-export const getPopular = async (page: number = 1): Promise<TMDBResponse> => {
+export const getPopular = async (
+  page: number = 1
+): Promise<TMDBResponse | undefined> => {
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}`,
@@ -144,10 +146,13 @@ export const getPopular = async (page: number = 1): Promise<TMDBResponse> => {
     return await response.json();
   } catch (error) {
     handleApiError(error, "getPopular");
+    return undefined;
   }
 };
 
-export const getTopRated = async (page: number = 1): Promise<TMDBResponse> => {
+export const getTopRated = async (
+  page: number = 1
+): Promise<TMDBResponse | undefined> => {
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/top_rated?api_key=${API_KEY}&page=${page}`,
@@ -166,10 +171,13 @@ export const getTopRated = async (page: number = 1): Promise<TMDBResponse> => {
     return await response.json();
   } catch (error) {
     handleApiError(error, "getTopRated");
+    return undefined;
   }
 };
 
-export const getUpcoming = async (page: number = 1): Promise<TMDBResponse> => {
+export const getUpcoming = async (
+  page: number = 1
+): Promise<TMDBResponse | undefined> => {
   try {
     const response = await fetch(
       `${TMDB_BASE_URL}/movie/upcoming?api_key=${API_KEY}&page=${page}`,
@@ -188,6 +196,7 @@ export const getUpcoming = async (page: number = 1): Promise<TMDBResponse> => {
     return await response.json();
   } catch (error) {
     handleApiError(error, "getUpcoming");
+    return undefined;
   }
 };
 

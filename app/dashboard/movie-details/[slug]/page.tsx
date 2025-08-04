@@ -265,26 +265,6 @@ export default async function MoviePage({ params }: MoviePageProps) {
             </div>
           </div>
         </div>
-
-        <div className="container mx-auto px-6 pb-12">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-            More Like This
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Array(4)
-              .fill(0)
-              .map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-gray-200 dark:bg-gray-800 rounded-lg h-64 flex items-center justify-center"
-                >
-                  <span className="text-gray-500 dark:text-gray-400">
-                    Similar Movie {i + 1}
-                  </span>
-                </div>
-              ))}
-          </div>
-        </div>
       </div>
     );
   } catch (error) {
