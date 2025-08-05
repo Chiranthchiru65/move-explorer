@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { Avatar } from "@heroui/avatar";
 import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
+
 import { User, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import toast from "react-hot-toast";
@@ -59,8 +59,6 @@ export const ProfileDropdown = () => {
             <p className="text-small font-bold text-foreground">John Doe</p>
             <p className="text-tiny text-foreground/60">john@example.com</p>
           </div>
-
-          <Divider className="my-1" />
 
           <div className="flex flex-col gap-1">
             <Button

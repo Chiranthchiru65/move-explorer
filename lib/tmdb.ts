@@ -59,6 +59,33 @@ export class TMDBError extends Error {
     this.name = "TMDBError";
   }
 }
+export interface TVShow {
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  first_air_date: string;
+  vote_average: number;
+  vote_count: number;
+  genre_ids: number[];
+  adult: boolean;
+  original_language: string;
+  original_name: string;
+  popularity: number;
+  origin_country: string[];
+}
+export interface TMDBTVResponse {
+  page: number;
+  results: TVShow[];
+  total_pages: number;
+  total_results: number;
+}
+const TV_CACHE_DURATIONS = {
+  ...CACHE_DURATIONS,
+  topRatedTV: 1 * DAY,
+  topRatedEpisodes: 6 * HOUR,
+};
 
 // enhanced error handler with specific error types
 const handleApiError = (error: any, functionName: string): never => {
@@ -196,6 +223,32 @@ export const getUpcoming = async (
     return await response.json();
   } catch (error) {
     handleApiError(error, "getUpcoming");
+    return undefined;
+  }
+};
+
+// Get popular TV shows (alternative to top-rated)
+export const getPopularTVShows = async (
+  page: number = 1
+): Promise<TMDBTVResponse | undefined> => {
+  try {
+    const response = await fetch(
+      `${TMDB_BASE_URL}/tv/popular?api_key=${API_KEY}&page=${page}`,
+      {
+        next: { revalidate: TV_CACHE_DURATIONS.popular },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        `HTTP ${response.status}: ${errorData.status_message || response.statusText}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    handleApiError(error, "getPopularTVShows");
     return undefined;
   }
 };

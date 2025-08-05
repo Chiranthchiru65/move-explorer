@@ -12,6 +12,10 @@ export const siteConfig = {
       label: "Movies",
       href: "/dashboard/movies",
     },
+    {
+      label: "Tv Shows",
+      href: "/dashboard/tv-shows",
+    },
   ],
   navMenuItems: [
     {
@@ -21,6 +25,10 @@ export const siteConfig = {
     {
       label: "movies",
       href: "/dashboard/movies",
+    },
+    {
+      label: "Tv Shows",
+      href: "/dashboard/tv-shows",
     },
   ],
 };

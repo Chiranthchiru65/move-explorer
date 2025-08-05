@@ -1,4 +1,3 @@
-import { title } from "@/components/primitives";
 import { searchMovies } from "@/lib/tmdb";
 import SearchResults from "@/components/searchResults";
 export default async function MoviePage({
