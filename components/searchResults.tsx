@@ -1,7 +1,7 @@
 "use client";
 
-import { useMovieSearch } from "@/hooks/movieSearch";
 import MovieCard from "./movieCard";
+import { useMovieSearch } from "@/hooks/movieSearch";
 
 interface SearchResultsProps {
   query: string;
@@ -24,8 +24,11 @@ export default function SearchResults({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Searching for "{query}"...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4" />
+          <p className="text-gray-400">
+            Searching for {'"'}
+            {query} {'"'}...
+          </p>
         </div>
       </div>
     );
@@ -50,7 +53,11 @@ export default function SearchResults({
               />
             </svg>
           </div>
-          <p className="mb-4">Failed to search for "{query}"</p>
+          <p>
+            No results found for {'"'}
+            {query}
+            {'"'}
+          </p>
           <button
             onClick={() => refetch()}
             className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
@@ -66,7 +73,8 @@ export default function SearchResults({
     return (
       <div>
         <div className="mb-4 text-sm text-gray-400">
-          Found {data?.total_results || movies.length} results for "{query}"
+          Found {data?.total_results || movies.length} results for {'"'} {query}{" "}
+          {'"'}
           {isLoading && (
             <span className="ml-2 text-orange-400">• Updating...</span>
           )}

@@ -21,10 +21,6 @@ export async function GET(request: NextRequest) {
 
     const data = await getUpcoming(page);
 
-    console.log(
-      ` API: Upcoming movies fetched successfully (${data.results.length} movies)`
-    );
-
     return NextResponse.json(data, {
       status: 200,
       headers: {

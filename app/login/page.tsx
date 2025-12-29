@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +79,7 @@ export default function LoginPage() {
       {isLoading ? (
         <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400 mx-auto mb-4" />
             <p className="text-gray-600 dark:text-gray-400">Loading...</p>
           </div>
         </div>
@@ -92,7 +93,7 @@ export default function LoginPage() {
                 backgroundImage: `url('https://images.unsplash.com/photo-1489599843714-2e99ac2108c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')`,
               }}
             >
-              <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+              <div className="absolute inset-0 bg-black bg-opacity-50" />
             </div>
           </div>
 
@@ -175,12 +176,12 @@ export default function LoginPage() {
                         Remember me
                       </label>
                     </div>
-                    <a
+                    <Link
                       href="#"
                       className="text-sm text-orange-400 hover:text-orange-300"
                     >
                       Forgot password?
-                    </a>
+                    </Link>
                   </div>
 
                   {/* Sign In Button */}
@@ -195,7 +196,7 @@ export default function LoginPage() {
                   {/* Divider */}
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-600"></div>
+                      <div className="w-full border-t border-gray-600" />
                     </div>
                     <div className="relative flex justify-center text-sm">
                       <span className="px-2 bg-gray-800 text-gray-400">
@@ -232,7 +233,7 @@ export default function LoginPage() {
                   {/* Sign up link */}
                   <div className="mt-6 text-center">
                     <span className="text-gray-400">
-                      Don't have an account?{" "}
+                      Dont have an account?{" "}
                     </span>
                     <button
                       formAction={handleSignup}

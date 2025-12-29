@@ -1,13 +1,19 @@
 import { searchMovies } from "@/lib/tmdb";
 import SearchResults from "@/components/searchResults";
-export default async function MoviePage({
-  searchParams,
-}: {
-  searchParams: { search?: string };
-}) {
+
+interface MoviePageProps {
+  // 1. FIXED: searchParams is now a Promise in Next.js 15
+  searchParams: Promise<{ search?: string }>;
+}
+
+export default async function MoviePage(props: MoviePageProps) {
+  // 2. FIXED: Await the searchParams before using them
+  const searchParams = await props.searchParams;
   const searchQuery = searchParams.search?.trim() || "";
+
   let initialResults: any[] = [];
   let ssrError = false;
+
   if (searchQuery) {
     try {
       const response = await searchMovies(searchQuery);
@@ -17,6 +23,7 @@ export default async function MoviePage({
       ssrError = true;
     }
   }
+
   return (
     <div className="px-12 ">
       <h1 className="text-2xl">

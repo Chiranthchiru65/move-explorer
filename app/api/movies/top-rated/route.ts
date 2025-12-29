@@ -1,5 +1,6 @@
+// app/api/movies/upcoming/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getTopRated, TMDBError } from "@/lib/tmdb";
+import { getUpcoming, TMDBError } from "@/lib/tmdb"; // Ensure getUpcoming is imported
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,12 +18,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`🔄 API: Fetching top rated movies (page ${page})`);
+    console.log(`🔄 API: Fetching upcoming movies (page ${page})`);
 
-    const data = await getTopRated(page);
+    const data = await getUpcoming(page);
+
+    // FIX: Check if data exists before accessing properties
+    if (!data) {
+      throw new Error("No data received from TMDB service");
+    }
 
     console.log(
-      `API: Top rated movies fetched successfully (${data.results.length} movies)`
+      ` API: Upcoming movies fetched successfully (${data.results.length} movies)`
     );
 
     return NextResponse.json(data, {
@@ -33,10 +39,10 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error(" API: Top rated movies error:", error);
+    console.error(" API: Upcoming movies error:", error);
 
     if (error instanceof TMDBError) {
-      const statusMap = {
+      const statusMap: Record<string, number> = {
         auth: 401,
         not_found: 404,
         rate_limit: 429,
@@ -56,7 +62,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
-        error: "Failed to fetch top rated movies. Please try again later.",
+        error: "Failed to fetch upcoming movies. Please try again later.",
         type: "server",
         code: "INTERNAL_ERROR",
       },

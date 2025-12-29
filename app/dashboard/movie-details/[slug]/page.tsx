@@ -1,11 +1,10 @@
-// app/movie-details/[slug]/page.tsx
 import { getMovieDetails } from "@/lib/tmdb";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import toast from "react-hot-toast";
 
+// 1. FIXED: 'params' is now a Promise in Next.js 15
 interface MoviePageProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 // Types based on your movie details response
@@ -41,13 +40,15 @@ interface MovieDetails {
   imdb_id?: string;
 }
 
-export default async function MoviePage({ params }: MoviePageProps) {
-  const { slug } = await params;
+export default async function MoviePage(props: MoviePageProps) {
+  // 2. FIXED: Await the params before accessing properties
+  const params = await props.params;
+  const { slug } = params;
   const movieId = Number(slug);
 
   try {
     const movie: MovieDetails = await getMovieDetails(movieId);
-    console.log(movie);
+
     // Helper functions
     const formatRuntime = (minutes: number) => {
       const hours = Math.floor(minutes / 60);
@@ -69,7 +70,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
     };
 
     return (
-      <div className="min-h-screen  bg-white dark:bg-black text-gray-900 dark:text-white">
+      <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white">
         {/* Hero Section with Backdrop */}
         <div className="relative h-[80vh] overflow-hidden">
           {/* Backdrop Image */}
@@ -114,7 +115,8 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
                 {movie.tagline && (
                   <p className="text-xl text-gray-600 dark:text-gray-800 italic mb-4">
-                    "{movie.tagline}"
+                    {'"'}
+                    {movie.tagline} {'"'}
                   </p>
                 )}
 
@@ -267,9 +269,8 @@ export default async function MoviePage({ params }: MoviePageProps) {
         </div>
       </div>
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    toast.error("error loading movie");
-    console.error("Error loading movie:", error);
     notFound();
   }
 }
