@@ -1,13 +1,12 @@
 import { searchMovies } from "@/lib/tmdb";
 import SearchResults from "@/components/searchResults";
+import BrowseMovies from "@/components/BrowseMovies";
 
 interface MoviePageProps {
-  // 1. FIXED: searchParams is now a Promise in Next.js 15
   searchParams: Promise<{ search?: string }>;
 }
 
 export default async function MoviePage(props: MoviePageProps) {
-  // 2. FIXED: Await the searchParams before using them
   const searchParams = await props.searchParams;
   const searchQuery = searchParams.search?.trim() || "";
 
@@ -25,12 +24,20 @@ export default async function MoviePage(props: MoviePageProps) {
   }
 
   return (
-    <div className="px-12 ">
-      <h1 className="text-2xl">
-        {searchQuery ? "Search Results" : "Browse Movies"}
-      </h1>
+    <div className="px-6 md:px-12 py-6 h-[calc(100vh-80px)] overflow-hidden">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold mb-2">
+          {searchQuery ? "Search Results" : "Popular Movies"}
+        </h1>
+        {!searchQuery && (
+          <p className="text-default-500">
+            Browse through our extensive collection of popular movies
+          </p>
+        )}
+      </div>
+
       {searchQuery ? (
-        <div className="mt-2 ">
+        <div className="mt-2 h-full overflow-y-auto pb-20 no-scrollbar">
           {ssrError ? (
             <SearchResults query={searchQuery} />
           ) : (
@@ -41,25 +48,7 @@ export default async function MoviePage(props: MoviePageProps) {
           )}
         </div>
       ) : (
-        <div className="text-center ">
-          <div className="text-gray-500">
-            <svg
-              className="mx-auto h-16 w-16 text-gray-400 mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <p className="text-lg mb-2">Discover Movies</p>
-            <p>Use the search bar above to find your favorite movies</p>
-          </div>
-        </div>
+        <BrowseMovies />
       )}
     </div>
   );
