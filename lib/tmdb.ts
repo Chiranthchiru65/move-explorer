@@ -263,6 +263,16 @@ export const getMovieDetails = async (movieId: number) => {
   }
 };
 
+export const getTVDetails = async (tvId: number) => {
+  try {
+    const response = await tmdbApi.get(`/tv/${tvId}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error, "getTVDetails");
+    throw error;
+  }
+};
+
 export const searchMovies = async (
   query: string,
   page: number = 1

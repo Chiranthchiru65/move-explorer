@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FixedSizeGrid as Grid } from "react-window";
-import { getPopularTVShows } from "@/lib/tmdb"; // Adjust import path as needed
+import { getPopularTVShows } from "@/lib/tmdb";
 import TVCard from "@/components/tvCard";
 
 interface TVShow {
@@ -13,66 +13,87 @@ interface TVShow {
   overview: string;
 }
 
-interface PageProps {}
-
-function TVShowsPage(props: PageProps) {
+function TVShowsPage() {
   const [allTVShows, setAllTVShows] = useState<TVShow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const COLUMN_COUNT = 6; //  cards per row
-  const CARD_WIDTH = 200; // width of each card
-  const CARD_HEIGHT = 400; // height of each card (including padding)
-  const GRID_HEIGHT = 600; // height of the virtualized container
+  // Responsive constants
+  const MIN_CARD_WIDTH = 220; // Increased slightly for better spacing
+  const CARD_HEIGHT = 480; 
+  const [gridHeight, setGridHeight] = useState(600);
 
-  // Calculate how many rows we need
-  const rowCount = Math.ceil(allTVShows.length / COLUMN_COUNT);
+  // Calculate dynamic column count based on container width
+  const columnCount = Math.max(1, Math.floor(containerWidth / MIN_CARD_WIDTH));
+  const columnWidth = containerWidth / columnCount;
+  const rowCount = Math.ceil(allTVShows.length / columnCount);
 
-  // CELL RENDERER
-  // renders individual cells in the grid
+  // Resize observer to handle responsiveness
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+        // Calculate remaining height for the grid
+        const topOffset = containerRef.current.getBoundingClientRect().top;
+        const remainingHeight = window.innerHeight - topOffset - 40; // 40px bottom padding
+        setGridHeight(Math.max(400, remainingHeight));
+      }
+    };
+
+    const observer = new ResizeObserver(updateDimensions);
+    observer.observe(containerRef.current);
+    
+    updateDimensions();
+
+    return () => observer.disconnect();
+  }, []);
+
   const Cell = useCallback(
     ({ columnIndex, rowIndex, style }: any) => {
-      const showIndex = rowIndex * COLUMN_COUNT + columnIndex;
+      const showIndex = rowIndex * columnCount + columnIndex;
       const tvShow = allTVShows[showIndex];
 
-      // Render the TV card with react-window's positioning
+      if (!tvShow) return null;
+
       return (
         <div style={style} className="p-2">
           <TVCard tvShow={tvShow} />
         </div>
       );
     },
-    [allTVShows]
+    [allTVShows, columnCount]
   );
 
   useEffect(() => {
     const fetchAllTVShows = async () => {
       try {
         setLoading(true);
-        const pagesToFetch = 15;
+        const pagesToFetch = 10; // Reduced for performance, can be increased
         const promises = [];
 
         for (let page = 1; page <= pagesToFetch; page++) {
           promises.push(getPopularTVShows(page));
         }
 
-        console.log(`Fetching ${pagesToFetch} pages of TV shows...`);
         const results = await Promise.all(promises);
+        const uniqueShows: TVShow[] = [];
+        const seenIds = new Set();
 
-        const showMap = new Map<number, TVShow>();
         results.forEach((result) => {
           if (result?.results) {
-            result.results.forEach((show) => {
-              showMap.set(show.id, show);
+            result.results.forEach((show: TVShow) => {
+              if (!seenIds.has(show.id)) {
+                seenIds.add(show.id);
+                uniqueShows.push(show);
+              }
             });
           }
         });
 
-        const uniqueShows = Array.from(showMap.values());
-        console.log(`Fetched ${uniqueShows.length} unique TV shows`);
-        console.log(
-          `This will create ${Math.ceil(uniqueShows.length / COLUMN_COUNT)} rows`
-        );
         setAllTVShows(uniqueShows);
         setError(null);
       } catch (err) {
@@ -87,44 +108,50 @@ function TVShowsPage(props: PageProps) {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8 items-center">
+    <div className="px-6 md:px-12 py-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Popular TV Shows
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <h1 className="text-3xl font-bold mb-2">Popular TV Shows</h1>
+        <p className="text-default-500">
           {loading
             ? "Loading TV shows..."
-            : `Showing ${allTVShows.length} popular TV shows`}
+            : `Showing ${allTVShows.length} popular TV shows with virtualization`}
         </p>
       </div>
 
-      {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">
-            Loading TV shows...
-          </p>
+      {error && (
+        <div className="text-center py-12 text-danger">
+          <p>{error}</p>
         </div>
       )}
 
-      {!loading && !error && allTVShows.length > 0 && (
-        <div className=" rounded-lg overflow-hidden overflow-y-hidden">
-          <Grid
-            columnCount={COLUMN_COUNT}
-            columnWidth={CARD_WIDTH}
-            height={GRID_HEIGHT}
-            rowCount={rowCount}
-            rowHeight={CARD_HEIGHT}
-            width={COLUMN_COUNT * CARD_WIDTH}
-          >
-            {Cell}
-          </Grid>
-        </div>
-      )}
+      <div ref={containerRef} className="w-full min-h-[500px]">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <p className="text-default-500">Fetching latest shows...</p>
+          </div>
+        ) : (
+          allTVShows.length > 0 && containerWidth > 0 && (
+            <div className="rounded-xl overflow-hidden">
+              <Grid
+                columnCount={columnCount}
+                columnWidth={columnWidth}
+                height={gridHeight}
+                rowCount={rowCount}
+                rowHeight={CARD_HEIGHT}
+                width={containerWidth}
+                className="no-scrollbar"
+                style={{ overflowX: 'hidden' }}
+              >
+                {Cell}
+              </Grid>
+            </div>
+          )
+        )}
+      </div>
 
       {!loading && !error && allTVShows.length === 0 && (
-        <div className="text-center text-gray-500 py-12">
+        <div className="text-center text-default-500 py-12">
           <p>No TV shows found.</p>
         </div>
       )}
@@ -133,3 +160,4 @@ function TVShowsPage(props: PageProps) {
 }
 
 export default TVShowsPage;
+
